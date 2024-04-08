@@ -1,0 +1,50 @@
+package taskjdbc;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class JdbctoMYSQL {
+    public static void main(String[] args) {
+        String url = "jdbc:mysql://localhost:3306"; // This is correct for initial connection
+        String user = "root";
+        String password = "MySQL@5";
+
+        // Using try-with-resources to ensure that the connection is closed automatically
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            if (conn != null) {
+                System.out.println("Successful");
+            } else {
+                System.out.println("Not successful");
+            }
+            Statement statement = conn.createStatement();
+            String createDB = "CREATE DATABASE testdb";
+            String use = "USE testdb";
+            // Fixed the CREATE TABLE statement by adding a closing parenthesis
+            String createtable = "CREATE TABLE emptable(empcode INT, empname VARCHAR(20), empage INT, esalary INT)";
+            statement.execute(createDB);
+            statement.execute(use);
+            statement.execute(createtable);
+
+            // Corrected the INSERT statement
+            String insert = "INSERT INTO emptable VALUES (101,'jenny',25,10000), " +
+                            "(102,'jacky',30,20000), " +
+                            "(103,'joe',20,40000), " +
+                            "(104,'john',40,80000), " +
+                            "(105,'SHAMEER',25,90000)";
+            statement.execute(insert);
+
+            String select = "SELECT * FROM emptable";
+            ResultSet rs = statement.executeQuery(select);
+            System.out.println("===============================================================");
+            while (rs.next()) {
+                System.out.println(rs.getInt("empcode") + " " + rs.getString("empname") + " " + rs.getInt("empage") + " " + rs.getInt("esalary"));
+            }
+            // No need to close the connection explicitly here because try-with-resources does it
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
